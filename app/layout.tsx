@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import MainHeader from "@/components/main-header";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,9 +27,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <MainHeader />
-          <main className="flex min-h-screen flex-col items-center justify-between p-24">
+          <main className="flex w-full min-h-screen flex-col items-center justify-between p-24">
             {children}
           </main>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

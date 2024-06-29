@@ -1,4 +1,6 @@
 import NextAuth from "next-auth";
+import { ZodError } from "zod";
+import { signInSchema } from "./lib/zod";
 import Credentials from "next-auth/providers/credentials";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -12,6 +14,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       authorize: async (credentials) => {
         let user = null;
+
+        const { email, password } = await signInSchema
+          .parseAsync(credentials)
+          .catch((error: ZodError) => {
+            throw new Error(error.errors[0].message);
+          });
 
         // logic to salt and hash password
 

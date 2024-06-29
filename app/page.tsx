@@ -1,10 +1,12 @@
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <Button>Click me</Button>
-    </main>
+    <>
+      <p>This a template for easily setup authentication.</p>
+      <p>
+        Made by{" "}
+        <span className="bg-yellow-300 text-black font-bold px-1">SONY</span>{" "}
+        with <span className="text-red-500">♥</span>
+      </p>
+    </>
   );
 }

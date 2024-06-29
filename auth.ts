@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import { ZodError } from "zod";
 import { signInSchema } from "./lib/zod";
 import Credentials from "next-auth/providers/credentials";
+import { saltAndHashPassword } from "./lib/password";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -22,6 +23,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           });
 
         // logic to salt and hash password
+        const pwHash = saltAndHashPassword(password);
 
         // logic to verify if user exists
 

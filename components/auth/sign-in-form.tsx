@@ -17,10 +17,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 const formSchema = signInSchema;
 
 const SignInForm = () => {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const { toast } = useToast();
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -32,14 +38,64 @@ const SignInForm = () => {
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setLoading(true);
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values);
-    toast({
-      title: "Login Success",
-    });
-  }
+    const { email, password } = values;
+    try {
+      const response = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (response?.error) {
+        toast({
+          title: "Error",
+          description: response.error,
+        });
+        return;
+      }
+
+      if (response?.ok) {
+        toast({
+          title: "Sign In Success.",
+          description: "You have been successfully signed in.",
+        });
+
+        router.push("/dashboard");
+      }
+      if (!response?.ok) {
+        toast({
+          title: "Error",
+          description: "Invalid credentials. Please try again.",
+        });
+      }
+    } catch (error) {
+      console.log("Error: ", error);
+      if ((error as { code: string }).code === "ETIMEDOUT") {
+        toast({
+          title: "Error",
+          description:
+            "Unable to connect to the database. Please try again later.",
+        });
+      } else if ((error as { code: string }).code === "503") {
+        toast({
+          title: "Error",
+          description:
+            "Service temporarily unavailable. Please try again later.",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred. Please try again later.",
+        });
+      }
+    }
+
+    setLoading(false);
+  };
 
   return (
     <Form {...form}>
@@ -78,7 +134,10 @@ const SignInForm = () => {
             </FormItem>
           )}
         />
-        <Button type="submit">Sign In</Button>
+        <Button type="submit">
+          {loading && <Loader2 className="animate-spin" />}
+          {!loading && "Sign In"}
+        </Button>
       </form>
     </Form>
   );

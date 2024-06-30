@@ -3,7 +3,7 @@
 import prisma from "@/lib/db";
 import * as z from "zod";
 import { signUpSchema } from "@/lib/zod";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export default async function register(data: z.infer<typeof signUpSchema>) {
   try {

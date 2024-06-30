@@ -5,6 +5,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "next-auth/providers/credentials";
 import prisma from "@/lib/db";
 import type { Provider } from "next-auth/providers";
+import bcrypt from "bcryptjs";
 
 const providers: Provider[] = [
   Credentials({
@@ -23,15 +24,24 @@ const providers: Provider[] = [
           throw new Error(error.errors[0].message);
         });
 
-      // logic to salt and hash password
+      // check if user exists
+      user = await prisma.user.findUnique({
+        where: {
+          email,
+        },
+      });
+
+      if (!user) {
+        throw new Error("User not found.");
+      }
 
       // logic to verify if user exists
 
-      if (!user) {
-        // No user found, so this is their first attempt to login
-        // meaning this is also the place you could do registration
-        throw new Error("User not found.");
-      }
+      const isValid: boolean = await bcrypt.compare(password, user.password!);
+
+      // if (!isValid) {
+      //   throw new Error("Invalid password.");
+      // }
 
       // return user object with the their profile data
       return user;
@@ -49,9 +59,18 @@ export const providerMap = providers.map((provider) => {
 });
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  session: {
+    strategy: "jwt",
+  },
   adapter: PrismaAdapter(prisma),
   providers,
   pages: {
     signIn: "/auth/signin",
+  },
+  callbacks: {
+    authorized: async ({ auth }) => {
+      // Logged in users are authenticated, otherwise redirect to login page
+      return !!auth;
+    },
   },
 });

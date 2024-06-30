@@ -10,8 +10,16 @@ import {
 import SignUpForm from "@/components/auth/sign-up-form";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { SocialAuth } from "@/components/auth/social-auth";
+import { auth } from "@/auth";
+import AlreadyLoggedIn from "@/components/auth/already-logged-in";
 
-const SignUpPage = () => {
+const SignUpPage = async () => {
+  const session = await auth();
+
+  if (session?.user) {
+    return <AlreadyLoggedIn />;
+  }
   return (
     <Card className="w-full">
       <CardHeader>
@@ -20,6 +28,7 @@ const SignUpPage = () => {
       </CardHeader>
       <CardContent>
         <SignUpForm />
+        <SocialAuth />
       </CardContent>
       <CardFooter className="justify-center">
         <p className="text-slate-500">Already have an account</p>

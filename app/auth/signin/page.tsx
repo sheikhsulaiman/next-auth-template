@@ -11,8 +11,14 @@ import SignInForm from "@/components/auth/sign-in-form";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { SocialAuth } from "@/components/auth/social-auth";
+import { auth } from "@/auth";
+import AlreadyLoggedIn from "@/components/auth/already-logged-in";
 
-const SignInPage = () => {
+const SignInPage = async () => {
+  const session = await auth();
+  if (session?.user) {
+    return <AlreadyLoggedIn />;
+  }
   return (
     <Card className="w-full">
       <CardHeader>

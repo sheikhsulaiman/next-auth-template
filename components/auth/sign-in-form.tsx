@@ -17,10 +17,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { signIn } from "next-auth/react";
+// import { signIn, SignInResponse } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { login } from "@/actions/login";
 
 const formSchema = signInSchema;
 
@@ -42,36 +43,24 @@ const SignInForm = () => {
     setLoading(true);
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    const { email, password } = values;
-    try {
-      const response = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
 
-      if (response?.error) {
+    try {
+      const response = await login(values);
+      if (response.error) {
         toast({
           title: "Error",
           description: response.error,
         });
+        setLoading(false);
         return;
       }
+      toast({
+        title: "Sign In Success.",
+        description: "You have been successfully signed in.",
+      });
+      setLoading(false);
 
-      if (response?.ok) {
-        toast({
-          title: "Sign In Success.",
-          description: "You have been successfully signed in.",
-        });
-
-        router.push("/dashboard");
-      }
-      if (!response?.ok) {
-        toast({
-          title: "Error",
-          description: "Invalid credentials. Please try again.",
-        });
-      }
+      router.push("/dashboard");
     } catch (error) {
       console.log("Error: ", error);
       if ((error as { code: string }).code === "ETIMEDOUT") {
@@ -93,6 +82,70 @@ const SignInForm = () => {
         });
       }
     }
+
+    // Legacy code
+    // const { email, password } = values;
+    // try {
+    //   const response: SignInResponse | undefined = await signIn("credentials", {
+    //     email,
+    //     password,
+    //     redirect: false,
+    //   });
+
+    //   response?.code;
+
+    //   if (response?.error === "AccessDenied") {
+    //     toast({
+    //       title: "Error",
+    //       description: response.error + ". Please verify your email first.",
+    //       action: (
+    //         <ToastAction
+    //           onClick={() => router.push("/auth/verify-email")}
+    //           altText={""}
+    //         >
+    //           Verify Email
+    //         </ToastAction>
+    //       ),
+    //     });
+    //     setLoading(false);
+    //     return;
+    //   }
+
+    //   if (response?.ok) {
+    //     toast({
+    //       title: "Sign In Success.",
+    //       description: "You have been successfully signed in.",
+    //     });
+    //     setLoading(false);
+    //     router.push("/dashboard");
+    //   }
+    //   if (!response?.ok) {
+    //     toast({
+    //       title: "Error",
+    //       description: "Invalid credentials. Please try again.",
+    //     });
+    //   }
+    // } catch (error) {
+    //   console.log("Error: ", error);
+    //   if ((error as { code: string }).code === "ETIMEDOUT") {
+    //     toast({
+    //       title: "Error",
+    //       description:
+    //         "Unable to connect to the database. Please try again later.",
+    //     });
+    //   } else if ((error as { code: string }).code === "503") {
+    //     toast({
+    //       title: "Error",
+    //       description:
+    //         "Service temporarily unavailable. Please try again later.",
+    //     });
+    //   } else {
+    //     toast({
+    //       title: "Error",
+    //       description: "An unexpected error occurred. Please try again later.",
+    //     });
+    //   }
+    // }
 
     setLoading(false);
   };

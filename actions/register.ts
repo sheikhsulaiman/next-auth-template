@@ -4,6 +4,7 @@ import prisma from "@/lib/db";
 import * as z from "zod";
 import { signUpSchema } from "@/lib/zod";
 import bcrypt from "bcryptjs";
+import { sendMagicLinkEmail } from "@/lib/mail";
 
 export default async function register(data: z.infer<typeof signUpSchema>) {
   try {
@@ -40,11 +41,12 @@ export default async function register(data: z.infer<typeof signUpSchema>) {
       },
     });
 
-    console.log("User created: ", user);
+    sendMagicLinkEmail(email);
 
-    return { message: "User created successfully." };
+    return {
+      message: "User created successfully. A verification email has been sent.",
+    };
   } catch (error) {
-    console.log("Error: ", error);
     if ((error as { code: string }).code === "ETIMEDOUT") {
       return {
         error: "Unable to connect to the database. Please try again later.",

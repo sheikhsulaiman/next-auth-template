@@ -49,12 +49,11 @@ const providers: Provider[] = [
 
       const isValid: boolean = await bcrypt.compare(password, user.password!);
 
-      // if (!isValid) {
-      //   throw new Error("Invalid password.");
-      // }
+      if (isValid) {
+        return user;
+      }
 
-      // return user object with the their profile data
-      return user;
+      return null;
     },
   }),
 ];
@@ -81,6 +80,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     authorized: async ({ auth }) => {
       // Logged in users are authenticated, otherwise redirect to login page
       return !!auth;
+    },
+    signIn: async ({ user, account }) => {
+      // Sign in logic
+      if (account?.provider !== "credentials") {
+        return true;
+      }
+
+      const existingUser = await prisma.user.findUnique({
+        where: {
+          id: user.id,
+        },
+      });
+
+      if (!existingUser?.emailVerified) {
+        return false;
+      }
+
+      return true;
     },
   },
 });

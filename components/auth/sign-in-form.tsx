@@ -22,6 +22,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { login } from "@/actions/login";
+import Link from "next/link";
 
 const formSchema = signInSchema;
 
@@ -152,7 +153,7 @@ const SignInForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
         <FormField
           control={form.control}
           name="email"
@@ -187,6 +188,11 @@ const SignInForm = () => {
             </FormItem>
           )}
         />
+        <Link className="w-full flex justify-end" href="/auth/reset-password">
+          <Button variant="link" className="p-0">
+            Forgot password
+          </Button>
+        </Link>
         <Button type="submit" className="w-full" disabled={loading}>
           {loading && <Loader2 className="animate-spin" />}
           {!loading && "Sign In"}

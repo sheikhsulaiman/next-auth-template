@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import MainHeader from "@/components/main-header";
 import { Toaster } from "@/components/ui/toaster";
+import { AuthProvider } from "@/components/auth/provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,18 +21,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <MainHeader />
-          <main className="flex w-full min-h-screen flex-col items-center justify-between pt-24 sm:p-24">
-            {children}
-          </main>
-          <Toaster />
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <MainHeader />
+            <main className="flex w-full min-h-screen flex-col items-center justify-between py-24 sm:p-24">
+              {children}
+            </main>
+            <Toaster />
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

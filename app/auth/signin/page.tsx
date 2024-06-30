@@ -10,6 +10,7 @@ import {
 import SignInForm from "@/components/auth/sign-in-form";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { SocialAuth } from "@/components/auth/social-auth";
 
 const SignInPage = () => {
   return (
@@ -20,6 +21,7 @@ const SignInPage = () => {
       </CardHeader>
       <CardContent>
         <SignInForm />
+        <SocialAuth />
       </CardContent>
       <CardFooter className="justify-center">
         <p className="text-slate-500">Don't have an account</p>

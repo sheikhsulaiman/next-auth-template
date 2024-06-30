@@ -134,7 +134,7 @@ const SignInForm = () => {
             </FormItem>
           )}
         />
-        <Button type="submit">
+        <Button type="submit" className="w-full" disabled={loading}>
           {loading && <Loader2 className="animate-spin" />}
           {!loading && "Sign In"}
         </Button>

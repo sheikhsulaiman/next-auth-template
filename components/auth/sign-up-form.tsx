@@ -1,6 +1,6 @@
 "use client";
 
-import { signInSchema } from "@/lib/zod";
+import { signUpSchema } from "@/lib/zod";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -18,9 +18,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-const formSchema = signInSchema;
+const formSchema = signUpSchema;
 
-const SignInForm = () => {
+const SignUpForm = () => {
   const { toast } = useToast();
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -28,6 +28,7 @@ const SignInForm = () => {
     defaultValues: {
       email: "",
       password: "",
+      confirm: "",
     },
   });
 
@@ -37,7 +38,7 @@ const SignInForm = () => {
     // ✅ This will be type-safe and validated.
     console.log(values);
     toast({
-      title: "Login Success",
+      title: "Registration Success.",
     });
   }
 
@@ -67,17 +68,39 @@ const SignInForm = () => {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your password." {...field} />
+                <Input
+                  type="password"
+                  placeholder="Enter your password."
+                  {...field}
+                />
               </FormControl>
 
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit">Sign In</Button>
+        <FormField
+          control={form.control}
+          name="confirm"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Confirm password</FormLabel>
+              <FormControl>
+                <Input
+                  type="password"
+                  placeholder="Re-type password."
+                  {...field}
+                />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit">Sign Up</Button>
       </form>
     </Form>
   );
 };
 
-export default SignInForm;
+export default SignUpForm;

@@ -27,7 +27,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <MainHeader />
-          <main className="flex w-full min-h-screen flex-col items-center justify-between p-24">
+          <main className="flex w-full min-h-screen flex-col items-center justify-between pt-24 sm:p-24">
             {children}
           </main>
           <Toaster />

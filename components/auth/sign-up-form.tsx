@@ -17,10 +17,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import register from "@/actions/register";
+import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 
 const formSchema = signUpSchema;
 
 const SignUpForm = () => {
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -33,14 +38,27 @@ const SignUpForm = () => {
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values);
-    toast({
-      title: "Registration Success.",
+
+    setLoading(true);
+    // Call the register function here.
+    register(values).then((response) => {
+      if (response.error) {
+        toast({
+          title: "Error",
+          description: response.error,
+        });
+      } else {
+        toast({
+          title: "Registration Success.",
+          description: response.message,
+        });
+      }
+      setLoading(false);
     });
-  }
+  };
 
   return (
     <Form {...form}>
@@ -97,7 +115,10 @@ const SignUpForm = () => {
             </FormItem>
           )}
         />
-        <Button type="submit">Sign Up</Button>
+        <Button type="submit" disabled={loading}>
+          {loading && <Loader2 className="animate-spin" />}
+          {!loading && "Sign Up"}
+        </Button>
       </form>
     </Form>
   );
